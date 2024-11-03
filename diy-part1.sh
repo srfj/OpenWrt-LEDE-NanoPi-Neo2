@@ -10,13 +10,6 @@
 # See /LICENSE for more information.
 #
 
-# Themes
-# 移除要替换的包
-rm -rf feeds/luci/themes/luci-theme-argon
-# 添加主题
-git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon package/luci-theme-argon
-
-
 # 添加软件包
 git clone https://github.com/xiaorouji/openwrt-passwall-packages package/openwrt-passwall
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
