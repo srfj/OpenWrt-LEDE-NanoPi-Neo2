@@ -22,6 +22,16 @@ sed -i 's/OpenWrt/LEDE-srfj/g' package/base-files/files/bin/config_generate
 # 设置密码为空（安装固件时无需密码登陆，然后自己修改想要的密码）
 sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' package/lean/default-settings/files/zzz-default-settings
 
+# =========修复sunxi A64 ATF + U‑BOOT rmdir目录非空报错=========
+# 修复trusted‑firmware‑a
+if [ -d package/boot/trusted-firmware-a ]; then
+    sed -i 's/rmdir /rm -rf /g' package/boot/trusted-firmware-a/Makefile
+fi
+# 修复所有u‑boot包，全局替换Makefile内rmdir → rm‑rf
+if [ -d package/boot/u-boot ]; then
+    find package/boot/u-boot -name "Makefile" -exec sed -i 's/rmdir /rm -rf /g' {} \;
+fi
+
 # make defconfig
 sed -i 's/^[ \t]*//g' ./.config
 make defconfig
