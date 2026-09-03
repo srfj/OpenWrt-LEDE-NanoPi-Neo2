@@ -15,4 +15,7 @@
 #git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 git clone https://github.com/Openwrt-Passwall/openwrt-passwall-packages package/openwrt-passwall
 git clone https://github.com/Openwrt-Passwall/openwrt-passwall package/luci-app-passwall
+
+# 删除源码中原有的argon主题
+rm -rf package/luci-theme-argon
 git clone https://github.com/jerrykuku/luci-theme-argon package/luci-theme-argon
