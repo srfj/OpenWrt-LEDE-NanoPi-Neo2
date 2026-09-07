@@ -42,10 +42,11 @@ sed -i '/^CONFIG_PACKAGE_luci-app-ssr-plus=y$/d' .config
 sed -i '/^CONFIG_PACKAGE_luci-i18n-ssr-plus-zh-cn=y$/d' .config
 make defconfig 2>&1 | tail -5
 
-# 验证 ssr-plus 是否已从配置中移除
-if grep -q "luci-app-ssr-plus" .config; then
-    echo "WARN: luci-app-ssr-plus still present in .config:"
-    grep "luci-app-ssr-plus" .config
+# 验证 ssr-plus 是否已从配置中移除（仅判定启用态 =y/=m，注释行 is not set 不影响）
+if grep -qE '^CONFIG_.*(ssr-plus|luci-i18n-ssr-plus).*=(y|m)$' .config; then
+    echo "WARN: ssr-plus still enabled in .config:"
+    grep -E '^CONFIG_.*(ssr-plus|luci-i18n-ssr-plus).*=(y|m)$' .config
+    exit 1
 else
     echo "OK: luci-app-ssr-plus has been removed from .config"
 fi
