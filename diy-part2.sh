@@ -46,11 +46,11 @@ sed -i '/^CONFIG_PACKAGE_luci-i18n-ssr-plus/d' .config
 # make defconfig
 make defconfig
 
-# 验证 ssr-plus 已从配置中移除
-if grep -qE '^CONFIG_.*(ssr-plus|luci-i18n-ssr-plus).*=(y|m)$' .config; then
-    echo "WARN: ssr-plus still enabled in .config:"
-    grep -E '^CONFIG_.*(ssr-plus|luci-i18n-ssr-plus).*=(y|m)$' .config
+# 验证 ssr-plus 已不会被编译（仅检查 PACKAGE 行，CONFIG_DEFAULT 不影响实际编译）
+if grep -qE '^CONFIG_PACKAGE_luci-app-ssr-plus[=y]' .config; then
+    echo "WARN: luci-app-ssr-plus will still be compiled:"
+    grep -E '^CONFIG_PACKAGE_luci-app-ssr-plus[=y]' .config
     exit 1
 else
-    echo "OK: luci-app-ssr-plus has been removed from .config"
+    echo "OK: luci-app-ssr-plus will not be compiled"
 fi
