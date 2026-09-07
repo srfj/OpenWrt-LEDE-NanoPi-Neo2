@@ -10,6 +10,11 @@
 # See /LICENSE for more information.
 #
 
+# =========移除 luci-app-ssr-plus=========
+# 从 feeds 层面删除该包，防止 make defconfig 强制选中
+rm -rf package/feeds/helloworld/luci-app-ssr-plus
+./scripts/feeds uninstall -f luci-app-ssr-plus 2>/dev/null || true
+
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.0.3/g' package/base-files/files/bin/config_generate
 
@@ -32,17 +37,16 @@ if [ -d package/boot/u-boot ]; then
     find package/boot/u-boot -name "Makefile" -exec sed -i 's/rmdir /rm -rf /g' {} \;
 fi
 
-# make defconfig
+# 清理 .config 中 ssr-plus 相关配置
 sed -i 's/^[ \t]*//g' ./.config
+sed -i '/^CONFIG_DEFAULT_luci-app-ssr-plus/d' .config
+sed -i '/^CONFIG_PACKAGE_luci-app-ssr-plus/d' .config
+sed -i '/^CONFIG_PACKAGE_luci-i18n-ssr-plus/d' .config
+
+# make defconfig
 make defconfig
 
-# 移除 luci-app-ssr-plus（兜底，防止 defconfig 后回归）
-sed -i 's/^CONFIG_DEFAULT_luci-app-ssr-plus=y$/# CONFIG_DEFAULT_luci-app-ssr-plus is not set/' .config
-sed -i '/^CONFIG_PACKAGE_luci-app-ssr-plus=y$/d' .config
-sed -i '/^CONFIG_PACKAGE_luci-i18n-ssr-plus-zh-cn=y$/d' .config
-make defconfig 2>&1 | tail -5
-
-# 验证 ssr-plus 是否已从配置中移除（仅判定启用态 =y/=m，注释行 is not set 不影响）
+# 验证 ssr-plus 已从配置中移除
 if grep -qE '^CONFIG_.*(ssr-plus|luci-i18n-ssr-plus).*=(y|m)$' .config; then
     echo "WARN: ssr-plus still enabled in .config:"
     grep -E '^CONFIG_.*(ssr-plus|luci-i18n-ssr-plus).*=(y|m)$' .config
