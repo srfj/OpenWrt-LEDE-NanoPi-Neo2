@@ -35,3 +35,17 @@ fi
 # make defconfig
 sed -i 's/^[ \t]*//g' ./.config
 make defconfig
+
+# 移除 luci-app-ssr-plus（兜底，防止 defconfig 后回归）
+sed -i 's/^CONFIG_DEFAULT_luci-app-ssr-plus=y$/# CONFIG_DEFAULT_luci-app-ssr-plus is not set/' .config
+sed -i '/^CONFIG_PACKAGE_luci-app-ssr-plus=y$/d' .config
+sed -i '/^CONFIG_PACKAGE_luci-i18n-ssr-plus-zh-cn=y$/d' .config
+make defconfig 2>&1 | tail -5
+
+# 验证 ssr-plus 是否已从配置中移除
+if grep -q "luci-app-ssr-plus" .config; then
+    echo "WARN: luci-app-ssr-plus still present in .config:"
+    grep "luci-app-ssr-plus" .config
+else
+    echo "OK: luci-app-ssr-plus has been removed from .config"
+fi
